@@ -123,3 +123,11 @@ public class GameModifierSmallPlayers : GameModifierScalePlayer
     public override bool SupportsRandomRounds => true;
     public override float Scale => 0.5f;
 }
+
+public class GameModifierLargePlayers : GameModifierScalePlayer
+{
+    public override string Name => "LargePlayers";
+    public override string Description => "Everyone is 2X larger";
+    public override bool SupportsRandomRounds => true;
+    public override float Scale => 2.0f;
+}
