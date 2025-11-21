@@ -40,64 +40,50 @@ public abstract class GameModifierScalePlayer : GameModifierBase
 
     protected void ApplyPlayerScale(CCSPlayerController? player)
     {
-        if (player == null || !player.IsValid || !player.PawnIsAlive)
+        if (player == null || !player.IsValid || player.Pawn?.Value == null || !player.Pawn.Value.IsValid)
         {
             return;
         }
 
         var playerPawn = player.PlayerPawn.Value;
-        if (playerPawn == null || !playerPawn.IsValid)
+        var sceneNode = playerPawn.CBodyComponent?.SceneNode;
+        var skeleton = sceneNode?.GetSkeletonInstance();
+        if (sceneNode == null || skeleton == null)
         {
             return;
         }
-
-        var playerSceneNode = playerPawn.CBodyComponent?.SceneNode;
-        if (playerSceneNode == null)
-        {
-            return;
-        }
-
+        
         if (!CachedOriginalScale.ContainsKey(player.Slot))
         {
-            CachedOriginalScale.Add(player.Slot, playerSceneNode.Scale);
+            CachedOriginalScale.Add(player.Slot, skeleton.Scale);
         }
-
-        playerSceneNode.Scale = Scale;
-        playerPawn.AcceptInput("SetScale", null, null, Scale.ToString());
-        Server.NextFrame(() =>
-        {
-            Utilities.SetStateChanged(playerPawn, "CBaseEntity", "m_CBodyComponent");
-        });
+        
+        skeleton.Scale = Scale;
+        playerPawn.AcceptInput("SetScale", null, null, Scale.ToString(CultureInfo.InvariantCulture));
+        Utilities.SetStateChanged(playerPawn, "CBaseEntity", "m_CBodyComponent");
+        
     }
 
     protected void ResetPlayerScale(CCSPlayerController? player)
     {
-        if (player == null || !player.IsValid)
+        if (player == null || !player.IsValid || player.Pawn?.Value == null || !player.Pawn.Value.IsValid)
         {
             return;
         }
 
-        var playerPawn = player.PlayerPawn.Value;
-        if (playerPawn == null || !playerPawn.IsValid)
+        var playerPawn = player.Pawn.Value;
+        var sceneNode = playerPawn.CBodyComponent?.SceneNode;
+        var skeleton = sceneNode?.GetSkeletonInstance();
+        if (sceneNode == null || skeleton == null)
         {
             return;
         }
 
-        var playerSceneNode = playerPawn.CBodyComponent?.SceneNode;
-        if (playerSceneNode == null)
+        if (CachedOriginalScale.TryGetValue(player.Slot, out float originalScale))
         {
-            return;
-        }
-
-        if (CachedOriginalScale.ContainsKey(player.Slot))
-        {
-            float originalScale = CachedOriginalScale[player.Slot];
-            playerSceneNode.Scale = originalScale;
-            playerPawn.AcceptInput("SetScale", null, null, originalScale.ToString());
-            Server.NextFrame(() =>
-            {
-                Utilities.SetStateChanged(playerPawn, "CBaseEntity", "m_CBodyComponent");
-            });
+            skeleton.Scale = originalScale;
+            playerPawn.AcceptInput("SetScale", null, null, originalScale.ToString(CultureInfo.InvariantCulture));
+            Utilities.SetStateChanged(playerPawn, "CBaseEntity", "m_CBodyComponent");
         }
     }
 
