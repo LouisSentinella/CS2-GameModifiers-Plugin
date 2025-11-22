@@ -198,7 +198,9 @@ public class GameModifierXrayAll : GameModifierXrayBase
         GameModifiersUtils.GetModifierName<GameModifierRandomCloak>(),
         GameModifiersUtils.GetModifierName<GameModifierSingleCloak>(),
         GameModifiersUtils.GetModifierName<GameModifierXrayRandom>(),
-        GameModifiersUtils.GetModifierName<GameModifierXraySingle>()
+        GameModifiersUtils.GetModifierName<GameModifierXraySingle>(),
+        GameModifiersUtils.GetModifierName<GameModifierXrayCounterTerrorists>(),
+        GameModifiersUtils.GetModifierName<GameModifierXrayTerrorists>()
     ];
     
     protected override bool CheckEnableXray(CCSPlayerController player)
@@ -243,7 +245,9 @@ public class GameModifierXraySingle : GameModifierXrayBase
         GameModifiersUtils.GetModifierName<GameModifierRandomCloak>(),
         GameModifiersUtils.GetModifierName<GameModifierSingleCloak>(),
         GameModifiersUtils.GetModifierName<GameModifierXrayAll>(),
-        GameModifiersUtils.GetModifierName<GameModifierXrayRandom>()
+        GameModifiersUtils.GetModifierName<GameModifierXrayRandom>(),
+        GameModifiersUtils.GetModifierName<GameModifierXrayCounterTerrorists>(),
+        GameModifiersUtils.GetModifierName<GameModifierXrayTerrorists>()
     ];
     
     protected override void SetupXray()
@@ -263,3 +267,67 @@ public class GameModifierXraySingle : GameModifierXrayBase
         }
     }
 }
+
+public class GameModifierXrayTerrorists : GameModifierXrayBase
+{
+    public override string Name => "TXray";
+    public override string Description => "The terrorists have wallhacks";
+    public override bool SupportsRandomRounds { get; protected set; } = true;
+    public override HashSet<string> IncompatibleModifiers =>
+    [
+        GameModifiersUtils.GetModifierName<GameModifierCloaked>(),
+        GameModifiersUtils.GetModifierName<GameModifierRandomCloak>(),
+        GameModifiersUtils.GetModifierName<GameModifierSingleCloak>(),
+        GameModifiersUtils.GetModifierName<GameModifierXrayAll>(),
+        GameModifiersUtils.GetModifierName<GameModifierXrayRandom>(),
+        GameModifiersUtils.GetModifierName<GameModifierXrayCounterTerrorists>()
+    ];
+    
+    protected override void SetupXray()
+    {
+        CachedXrayEnabledPlayers.Clear();
+        
+        List<CCSPlayerController> terroristPlayers = GameModifiersUtils.GetTerroristPlayers();
+        if (terroristPlayers.Any())
+        {
+            foreach (CCSPlayerController terroristPlayer in terroristPlayers)
+            {
+                CachedXrayEnabledPlayers.Add(terroristPlayer.Slot);
+            }
+        }
+    }
+}
+
+
+public class GameModifierXrayCounterTerrorists : GameModifierXrayBase
+{
+    public override string Name => "CTXray";
+    public override string Description => "The counter-terrorists have wallhacks";
+    public override bool SupportsRandomRounds { get; protected set; } = true;
+    public override HashSet<string> IncompatibleModifiers =>
+    [
+        GameModifiersUtils.GetModifierName<GameModifierCloaked>(),
+        GameModifiersUtils.GetModifierName<GameModifierRandomCloak>(),
+        GameModifiersUtils.GetModifierName<GameModifierSingleCloak>(),
+        GameModifiersUtils.GetModifierName<GameModifierXrayAll>(),
+        GameModifiersUtils.GetModifierName<GameModifierXrayRandom>(),
+        GameModifiersUtils.GetModifierName<GameModifierXrayTerrorists>()
+    ];
+    
+    protected override void SetupXray()
+    {
+        CachedXrayEnabledPlayers.Clear();
+        
+        List<CCSPlayerController> counterTerroristPlayers = GameModifiersUtils.GetCounterTerroristPlayers();
+        if (counterTerroristPlayers.Any())
+        {
+            foreach (CCSPlayerController counterTerroristPlayer in counterTerroristPlayers)
+            {
+                CachedXrayEnabledPlayers.Add(counterTerroristPlayer.Slot);
+            }
+        }
+
+    }
+}
+
+
