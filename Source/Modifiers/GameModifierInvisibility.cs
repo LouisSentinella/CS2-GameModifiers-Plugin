@@ -5,6 +5,7 @@ using System.Linq;
 
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Utils;
 
 namespace GameModifiers.Modifiers;
 
@@ -162,7 +163,9 @@ public class GameModifierCloaked : GameModifierInvisibleBase
     public override HashSet<string> IncompatibleModifiers =>
     [
         GameModifiersUtils.GetModifierName<GameModifierRandomCloak>(),
-        GameModifiersUtils.GetModifierName<GameModifierSingleCloak>()
+        GameModifiersUtils.GetModifierName<GameModifierSingleCloak>(),
+        GameModifiersUtils.GetModifierName<GameModifierTerroristCloak>(),
+        GameModifiersUtils.GetModifierName<GameModifierCounterTerroristCloak>(),
     ];
     
     protected override bool CheckHidePlayer(CCSPlayerController player)
@@ -179,7 +182,9 @@ public class GameModifierRandomCloak : GameModifierInvisibleBase
     public override HashSet<string> IncompatibleModifiers =>
     [
         GameModifiersUtils.GetModifierName<GameModifierCloaked>(),
-        GameModifiersUtils.GetModifierName<GameModifierSingleCloak>()
+        GameModifiersUtils.GetModifierName<GameModifierSingleCloak>(),
+        GameModifiersUtils.GetModifierName<GameModifierTerroristCloak>(),
+        GameModifiersUtils.GetModifierName<GameModifierCounterTerroristCloak>(),
     ];
     
     protected override bool CheckHidePlayer(CCSPlayerController player)
@@ -201,7 +206,9 @@ public class GameModifierSingleCloak : GameModifierInvisibleBase
     public override HashSet<string> IncompatibleModifiers =>
     [
         GameModifiersUtils.GetModifierName<GameModifierCloaked>(),
-        GameModifiersUtils.GetModifierName<GameModifierRandomCloak>()
+        GameModifiersUtils.GetModifierName<GameModifierRandomCloak>(),
+        GameModifiersUtils.GetModifierName<GameModifierTerroristCloak>(),
+        GameModifiersUtils.GetModifierName<GameModifierCounterTerroristCloak>(),
     ];
     
     protected override void HidePlayers()
@@ -219,5 +226,53 @@ public class GameModifierSingleCloak : GameModifierInvisibleBase
         {
             CachedHiddenPlayers.Add(counterTerroristPlayers[Random.Shared.Next(counterTerroristPlayers.Count)].Slot);
         }
+    }
+}
+
+public class GameModifierTerroristCloak : GameModifierInvisibleBase
+{
+    public override string Name => "TerroristCloak";
+    public override string Description => "Every terrorist is invisible";
+    public override bool SupportsRandomRounds => false;
+    public override HashSet<string> IncompatibleModifiers =>
+    [
+        GameModifiersUtils.GetModifierName<GameModifierCloaked>(),
+        GameModifiersUtils.GetModifierName<GameModifierRandomCloak>(),
+        GameModifiersUtils.GetModifierName<GameModifierTerroristCloak>(),
+        
+    ];
+    
+    protected override bool CheckHidePlayer(CCSPlayerController player)
+    {
+        if (player.Team == CsTeam.Terrorist)
+        {
+            return true;
+        }
+
+        return false;
+    }
+}
+
+
+public class GameModifierCounterTerroristCloak : GameModifierInvisibleBase
+{
+    public override string Name => "CounterTerroristCloak";
+    public override string Description => "Every counter-terrorist is invisible";
+    public override bool SupportsRandomRounds => false;
+    public override HashSet<string> IncompatibleModifiers =>
+    [
+        GameModifiersUtils.GetModifierName<GameModifierCloaked>(),
+        GameModifiersUtils.GetModifierName<GameModifierRandomCloak>(),
+        GameModifiersUtils.GetModifierName<GameModifierCounterTerroristCloak>(),
+    ];
+    
+    protected override bool CheckHidePlayer(CCSPlayerController player)
+    {
+        if (player.Team == CsTeam.CounterTerrorist)
+        {
+            return true;
+        }
+
+        return false;
     }
 }
