@@ -14,9 +14,11 @@ mind when reading through the code and if I have done something wrong pull reque
 
 ## ⚠️ NOTICE
 
-I am forking this project from [Lewisscrivens](https://github.com/Lewisscrivens/CS2-GameModifiers-Plugin) and trying to keep it updated as possible, after some testing I found some errors and will work on them in my spare time.
+This is a fork from https://github.com/vinicius-trev/CS2-GameModifiers-Plugin
 
-As already said in this project, feel free to contribute
+I have added the following functionality:
+- Fixed the model scaling functions
+- Add team specific modifiers for both invisibility and X-Ray
 
 ## 🔧 Modifiers
 
